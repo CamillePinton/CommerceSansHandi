@@ -20,6 +20,7 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 
 def create_app(test_config=None):
     app = Flask(__name__)
+    app.register_blueprint(swaggerui_blueprint)
 
     #Cache
     config = {

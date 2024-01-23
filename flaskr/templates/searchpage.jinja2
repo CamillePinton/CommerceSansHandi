@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://kit.fontawesome.com/bae3523968.js"
+      crossorigin="anonymous"></script>
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/styles.css') }}" />
+    <title>HandiShop</title>
+  </head>
+  <body class="gridbody">
+    <div class="flexdiv el el1" style="width:100%;" >
+      <input type="textarea" placeholder="I'm looking for ..." style="width: 80%;" />
+      <div class="flexdiv" style="height:100%;">
+        <button style="height:30px;width:30px;">
+          <i class="fa-solid fa-magnifying-glass" ></i>
+        </button>
+      </div>
+    </div>
+    <form class="el2 el"></form>
+    <div class="el3 el">
+      {% for i in ind %}
+        <div class="shortcommerce">
+          <div class="flexdiv"  style="font-size: 18px; height: 40px;">
+            <p>{{nam[i]}}</p>
+          </div>
+          <div class="flexdivleft aze">
+            <p>{{typA[i]}}</p>
+            {% if typR[i] != [] %}
+              {% for el in typR %}
+                <p> , {{el}}</p>
+              {% endfor %}
+            {% endif %}
+          </div>
+          <div class="flexdivleft aze">
+            <p><address>{{add[i]}}</address></p>
+          </div>
+          <div class="flexdiv aze"  style="font-size: 18px;">
+            <p>adaptation</p> <i class="fa-solid fa-x" style="margin-left: 15px;"></i><i class="fa-solid fa-check" style="margin-left: 15px;"></i>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="el4 el"></div>
+  </body>
+</html>

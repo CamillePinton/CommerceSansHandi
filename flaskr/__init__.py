@@ -19,7 +19,7 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 
 
 def create_app(test_config=None):
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path="/")
     app.register_blueprint(swaggerui_blueprint)
 
     #Cache
@@ -52,7 +52,18 @@ def create_app(test_config=None):
     def all_commerces():
         all = requests.get(API_Commerce)
         results=all.json()["results"]
-        return results
+        indices = list(range(len(results)))
+        addresses = [results[i]["address"] for i in indices]
+        names = [results[i]["name"] for i in indices]
+        typesA = [results[i]["type"][0].replace("_"," ") for i in indices]
+        typesR = [results[i]["type"][1:] if len(results[i]["type"][0]) > 1 else [] for i in indices]
+        availabilies = [0 for i in range(len(results))]
+        for x in typesR :
+            for y in x :
+                y = y.replace("_"," ")
+        return render_template('searchpage.jinja2',ind=indices,add=addresses, nam=names, typA=typesA, typR=typesR, ava=availabilies)
+    
+
     return app
 
 

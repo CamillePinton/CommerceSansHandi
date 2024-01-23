@@ -2,7 +2,7 @@ from flask import Flask, request, render_template
 import os
 import requests
 from flask_swagger_ui import get_swaggerui_blueprint
-from flask_caching import Cache
+#from flask_caching import Cache
 
 
 #Documentation
@@ -29,8 +29,8 @@ def create_app(test_config=None):
         "CACHE_DEFAULT_TIMEOUT": 300
     }
     app.config.from_mapping(config)
-    cache = Cache(app)
-    cache.init_app(app, config={'CACHE_TYPE': 'SimpleCache'})
+    #cache = Cache(app)
+    #cache.init_app(app, config={'CACHE_TYPE': 'SimpleCache'})
 
     # Variable pour API acceslibre
     key = ""
@@ -42,14 +42,47 @@ def create_app(test_config=None):
 
 
     @app.route("/")
-    @cache.cached(timeout=50)
+    #@cache.cached(timeout=50)
     def index():
         return render_template('index.html')
 
 
-    @app.route("/commerces", methods=['GET'])
-    @cache.cached(timeout=50)
+    @app.route("/commerces", methods=['GET', 'POST'])
+    #@cache.cached(timeout=50)
     def all_commerces():
+        if request.method == 'POST' :
+            txt = request.form["type_chosen"]
+            print(txt)
+            if txt != "" :
+                print("POST with arguments")
+                all = requests.get(API_Commerce)
+                results=all.json()["results"]
+                addresses = []
+                names = []
+                typesA = []
+                typesR = []
+                availabilies = []
+                for res in results :
+                    found = False
+                    for t in res["type"] :
+                        if txt in t :
+                            found = True
+                    if found :
+                        addresses.append(res["address"])
+                        names.append(res["name"])
+                        typesA.append(res["type"][0].replace("_"," "))
+                        if len(res["type"]) > 1 :
+                            typesR.append(res["type"][1:])
+                        availabilies.append(0)
+                        for x in typesR :
+                            for y in x :
+                                y = y.replace("_"," ")
+                indices = list(range(len(addresses)))
+                return render_template('searchpage.jinja2',ind=indices,add=addresses, nam=names, typA=typesA, typR=typesR, ava=availabilies)
+            else : 
+                print("POST without arguments")
+        
+        print("Here we are")
         all = requests.get(API_Commerce)
         results=all.json()["results"]
         indices = list(range(len(results)))
@@ -63,7 +96,6 @@ def create_app(test_config=None):
                 y = y.replace("_"," ")
         return render_template('searchpage.jinja2',ind=indices,add=addresses, nam=names, typA=typesA, typR=typesR, ava=availabilies)
     
-
     return app
 
 

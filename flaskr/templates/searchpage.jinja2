@@ -10,15 +10,15 @@
     <title>HandiShop</title>
   </head>
   <body class="gridbody">
-    <div class="flexdiv el el1" style="width:100%;" >
-      <input type="textarea" placeholder="I'm looking for ..." style="width: 80%;" />
+    <form action = "http://192.168.43.150:5000/commerces" method = "POST" class="flexdiv el el1" style="width:100%;" >
+      <input name="type_chosen" type="textarea" placeholder="I'm looking for ..." style="width: 80%;" />
       <div class="flexdiv" style="height:100%;">
-        <button style="height:30px;width:30px;">
+        <button type="submit" style="height:30px;width:30px;">
           <i class="fa-solid fa-magnifying-glass" ></i>
         </button>
       </div>
-    </div>
-    <form class="el2 el"></form>
+    </form>
+    <div class="el2 el"></div>
     <div class="el3 el">
       {% for i in ind %}
         <div class="shortcommerce">

@@ -11,4 +11,4 @@ Ce répertoire vise à recenser les commerces à Nantes en mettant en évidence 
 ## URL Appel API
 
 -[API ERP Accès Libre](https://acceslibre.beta.gouv.fr/api/docs/)  
--[API Commerces Pays de la Loire](https://data.paysdelaloire.fr/api/explore/v2.1/catalog/datasets/commerces-export-openstreetmap-france/records?limit=20)
+-[API Commerces Pays de la Loire](https://data.paysdelaloire.fr/explore/dataset/commerces-export-openstreetmap-france/api/?disjunctive.type&disjunctive.region&disjunctive.departement&disjunctive.commune)

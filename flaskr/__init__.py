@@ -2,6 +2,8 @@ from flask import Flask, request, render_template
 import os
 import requests
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_caching import Cache
+
 
 #Documentation
 SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
@@ -18,6 +20,17 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 
 def create_app(test_config=None):
     app = Flask(__name__)
+    app.register_blueprint(swaggerui_blueprint)
+
+    #Cache
+    config = {
+        "DEBUG": True,          # some Flask specific configs
+        "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
+        "CACHE_DEFAULT_TIMEOUT": 300
+    }
+    app.config.from_mapping(config)
+    cache = Cache(app)
+    cache.init_app(app, config={'CACHE_TYPE': 'SimpleCache'})
 
     # Variable pour API acceslibre
     key = ""
@@ -29,15 +42,17 @@ def create_app(test_config=None):
 
 
     @app.route("/")
-    def hello_world():
+    @cache.cached(timeout=50)
+    def index():
         return render_template('index.html')
 
 
     @app.route("/commerces", methods=['GET'])
+    @cache.cached(timeout=50)
     def all_commerces():
         all = requests.get(API_Commerce)
-        return all.json()
-
+        results=all.json()["results"]
+        return results
     return app
 
 

@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, request, render_template
 import os
 import requests
 
 app = Flask(__name__)
+
 #Variable pour API acceslibre
 key=""
 API_acceslibre=""
@@ -13,7 +14,7 @@ API_Commerce="https://data.paysdelaloire.fr/api/explore/v2.1/catalog/datasets/co
 
 @app.route("/")
 def hello_world():
-    return "<p>Hello, World!</p>"
+    return render_template('index.html')
 
 @app.route("/commerces", methods=['GET'])
 def all_commerces():

@@ -2,12 +2,12 @@ from flask import Flask, request, render_template
 import os
 import requests
 from flask_swagger_ui import get_swaggerui_blueprint
-from flask_caching import Cache
+#from flask_caching import Cache
 
 
 #Documentation
 SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
-API_URL = '/static/swagger.json'  # Our API url (can of course be a local resource)
+API_URL = '/swagger.json'  # Our API url (can of course be a local resource)
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
@@ -19,7 +19,7 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 
 
 def create_app(test_config=None):
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path="/")
     app.register_blueprint(swaggerui_blueprint)
 
     #Cache
@@ -29,8 +29,8 @@ def create_app(test_config=None):
         "CACHE_DEFAULT_TIMEOUT": 300
     }
     app.config.from_mapping(config)
-    cache = Cache(app)
-    cache.init_app(app, config={'CACHE_TYPE': 'SimpleCache'})
+    #cache = Cache(app)
+    #cache.init_app(app, config={'CACHE_TYPE': 'SimpleCache'})
 
     # Variable pour API acceslibre
     key = ""
@@ -42,17 +42,62 @@ def create_app(test_config=None):
 
 
     @app.route("/")
-    @cache.cached(timeout=50)
+    #@cache.cached(timeout=50)
     def index():
         return render_template('index.html')
 
 
-    @app.route("/commerces", methods=['GET'])
-    @cache.cached(timeout=50)
+    @app.route("/commerces", methods=['GET', 'POST'])
+    #@cache.cached(timeout=50)
     def all_commerces():
+        if request.method == 'POST' :
+            txt = request.form["type_chosen"]
+            print(txt)
+            if txt != "" :
+                print("POST with arguments")
+                all = requests.get(API_Commerce)
+                results=all.json()["results"]
+                addresses = []
+                names = []
+                typesA = []
+                typesR = []
+                availabilies = []
+                for res in results :
+                    found = False
+                    for t in res["type"] :
+                        if txt in t :
+                            found = True
+                    if found :
+                        addresses.append(res["address"])
+                        names.append(res["name"])
+                        typesA.append(res["type"][0].replace("_"," "))
+                        if len(res["type"]) > 1 :
+                            typesR.append(res["type"][1:])
+                        availabilies.append(0)
+                        for x in typesR :
+                            for y in x :
+                                y = y.replace("_"," ")
+                indices = list(range(len(addresses)))
+                return render_template('searchpage.jinja2',ind=indices,add=addresses, nam=names, typA=typesA, typR=typesR, ava=availabilies)
+            else : 
+                print("POST without arguments")
+        
+        print("Here we are")
         all = requests.get(API_Commerce)
         results=all.json()["results"]
-        return results
+        indices = list(range(len(results)))
+        addresses = [results[i]["address"] for i in indices]
+        names = [results[i]["name"] for i in indices]
+        typesA = [results[i]["type"][0].replace("_"," ") for i in indices]
+        typesR = [results[i]["type"][1:] if len(results[i]["type"][0]) > 1 else [] for i in indices]
+        availabilies = [0 for i in range(len(results))]
+        for x in typesR :
+            for y in x :
+                y = y.replace("_"," ")
+        return render_template('searchpage.jinja2',ind=indices,add=addresses, nam=names, typA=typesA, typR=typesR, ava=availabilies)
+    
+
+
     return app
 
 

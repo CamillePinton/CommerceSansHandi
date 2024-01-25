@@ -7,7 +7,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 
 #Documentation
 SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
-API_URL = '/static/swagger.json'  # Our API url (can of course be a local resource)
+API_URL = '/swagger.json'  # Our API url (can of course be a local resource)
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
@@ -96,6 +96,8 @@ def create_app(test_config=None):
                 y = y.replace("_"," ")
         return render_template('searchpage.jinja2',ind=indices,add=addresses, nam=names, typA=typesA, typR=typesR, ava=availabilies)
     
+
+
     return app
 
 
